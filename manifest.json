@@ -2,5 +2,9 @@
   "name": "Team Component Transporter",
   "id": "934637336169002623",
   "api": "1.0.0",
-  "main": "code.js"
+  "main": "code.js",
+   "menu": [
+     {"name": "Save Target Component", "command": "saveTargetComponent"},
+     {"name": "Replace Nodes", "command": "replaceNodes"}
+   ]
 }
