@@ -11,7 +11,7 @@ const clientStrageKey = 'team-library-components';
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         if (figma.command == "saveTargetComponent") {
-            yield saveTargetComponent();
+            yield saveTargetComponent([figma.currentPage]);
         }
         else if (figma.command == "replaceNodes") {
             yield replaceNodes(figma.currentPage.selection);
@@ -20,15 +20,21 @@ function main() {
     });
 }
 // ComponentFileのComponent IDを取得して保存
-const teamLibraryMasterComponents = [];
-function saveTargetComponent() {
+const teamLibraryMasterComponents = {};
+function saveTargetComponent(nodes) {
     return __awaiter(this, void 0, void 0, function* () {
-        for (let i = 0; i < figma.currentPage.selection.length; i++) {
-            let nodes = figma.currentPage.selection;
-            teamLibraryMasterComponents.push(new MasterComponent(nodes[i].name, nodes[i].key));
-            yield figma.clientStorage.setAsync(clientStrageKey, teamLibraryMasterComponents);
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].type === "COMPONENT" || nodes[i].type === "COMPONENTSET") {
+                teamLibraryMasterComponents[nodes[i].name] = nodes[i].key;
+            }
+            if (nodes[i].children != null) {
+                saveTargetComponent(nodes[i].children);
+            }
+            if (nodes[i].children === null) {
+                return false;
+            }
         }
-        return true;
+        yield figma.clientStorage.setAsync(clientStrageKey, teamLibraryMasterComponents);
     });
 }
 // 保存したComponent IDを使ってリプレイス
@@ -37,20 +43,16 @@ function replaceNodes(nodes) {
         const teamLibraryComponents = yield figma.clientStorage.getAsync(clientStrageKey);
         for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].type === "FRAME" || nodes[i].type === "INSTANCE") {
-                const findComponentName = teamLibraryComponents.find((v) => v.name === nodes[i].name);
-                const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(findComponentName.key);
-                const teamLibrayComponentInstance = getTeamLibraryComponent.createInstance();
+                const key = teamLibraryComponents[nodes[i].name];
+                const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(key);
+                const teamLibrayComponentInstance = yield getTeamLibraryComponent.createInstance();
                 nodes[i].parent.insertChild(1, teamLibrayComponentInstance);
                 //indexの1はまだ適当に入れてるだけ
+                teamLibrayComponentInstance.x = nodes[i].x;
+                teamLibrayComponentInstance.y = nodes[i].y;
                 nodes[i].remove();
             }
         }
     });
-}
-class MasterComponent {
-    constructor(name, key) {
-        this.name = name;
-        this.key = key;
-    }
 }
 main();
