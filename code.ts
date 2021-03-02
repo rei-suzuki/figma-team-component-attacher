@@ -26,9 +26,6 @@ async function findComponent(teamLibraryMasterComponents, nodes) {
     if (node.children != null) {
       findComponent(teamLibraryMasterComponents, node.children)
     }
-    if (node.children === null){
-      return false
-    }
   } 
 }
 
@@ -57,11 +54,7 @@ async function replaceNodes(nodes, teamLibraryComponents) {
       } else {
         replaceNodes(node.children, teamLibraryComponents)
       }
-    } else if (nodes[i].children != null) {
-      replaceNodes(nodes[i].children, teamLibraryComponents)
-    } else if (nodes[i].children === null) {
-      return false
-    }
+    } 
   }
 }
 
