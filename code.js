@@ -15,7 +15,7 @@ function main() {
         }
         else if (figma.command == "replaceNodes") {
             const teamLibraryComponents = yield figma.clientStorage.getAsync(clientStrageKey);
-            yield replaceNodes(figma.currentPage.selection, teamLibraryComponents);
+            yield findTargetNodes(figma.currentPage.selection, teamLibraryComponents);
         }
         figma.closePlugin();
     });
@@ -49,14 +49,7 @@ function findTargetNodes(nodes, teamLibraryComponents) {
                     if (node.type === "INSTANCE" && node.mainComponent.key === teamLibraryComponents[node.name]) {
                         continue;
                     }
-                    else {
-                        try {
-                            yield replaceNodes(node, key);
-                        }
-                        catch (e) {
-                            figma.notify(e);
-                        }
-                    }
+                    yield replaceNodes(node, key);
                 }
                 else {
                     findTargetNodes(node.children, teamLibraryComponents);
@@ -67,13 +60,19 @@ function findTargetNodes(nodes, teamLibraryComponents) {
 }
 function replaceNodes(node, key) {
     return __awaiter(this, void 0, void 0, function* () {
-        const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(key);
-        const teamLibrayComponentInstance = yield getTeamLibraryComponent.createInstance();
-        const index = node.parent.children.findIndex((child) => child.id === node.id);
-        node.parent.insertChild(index, teamLibrayComponentInstance);
-        teamLibrayComponentInstance.x = node.x;
-        teamLibrayComponentInstance.y = node.y;
-        node.remove();
+        try {
+            const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(key);
+            const teamLibrayComponentInstance = yield getTeamLibraryComponent.createInstance();
+            const index = node.parent.children.findIndex((child) => child.id === node.id);
+            node.parent.insertChild(index, teamLibrayComponentInstance);
+            teamLibrayComponentInstance.x = node.x;
+            teamLibrayComponentInstance.y = node.y;
+            node.remove();
+        }
+        catch (e) {
+            const error = e.toString();
+            figma.notify(error);
+        }
     });
 }
 main();
