@@ -46,7 +46,7 @@ async function findTargetNodes(nodes, teamLibraryComponents) {
   }
 }
 
-async function replaceNodes(node, key) {
+async function replaceNode(node, key) {
   try {  
     const teamLibraryComponent = await figma.importComponentByKeyAsync(key)
     const teamLibrayComponentInstance = await getTeamLibraryComponent.createInstance()
