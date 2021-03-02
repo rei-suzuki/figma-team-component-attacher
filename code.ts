@@ -34,24 +34,28 @@ async function findComponent(teamLibraryMasterComponents, nodes) {
 
 // 保存したComponent IDを使ってリプレイス
 async function replaceNodes(nodes, teamLibraryComponents) {
-  for (let i = 0; i < nodes.length; i++) {
-    if (nodes[i].type === "INSTANCE" || nodes[i].type === "FRAME") {
-      const key = teamLibraryComponents[nodes[i].name]
-      if (key != undefined) {
-        try {
-          const getTeamLibraryComponent = await figma.importComponentByKeyAsync(key)
-          const teamLibrayComponentInstance = await getTeamLibraryComponent.createInstance()
-          const index = nodes[i].parent.children.findIndex((child) => child.id === nodes[i].id)
-          nodes[i].parent.insertChild(index, teamLibrayComponentInstance)
-          teamLibrayComponentInstance.x = nodes[i].x
-          teamLibrayComponentInstance.y = nodes[i].y
-          nodes[i].remove()
+  for (const node of nodes) {
+    if (node.type === "INSTANCE" || node.type === "FRAME" || node.type === "GROUP") {
+      const key = teamLibraryComponents[node.name]    
+      if (key != undefined) { 
+        if (node.type === "INSTANCE" && node.mainComponent.key === teamLibraryComponents[node.name]) {
+          continue
+        } else {
+          try {  
+            const getTeamLibraryComponent = await figma.importComponentByKeyAsync(key)
+            const teamLibrayComponentInstance = await getTeamLibraryComponent.createInstance()
+            const index = node.parent.children.findIndex((child) => child.id === node.id)
+            node.parent.insertChild(index, teamLibrayComponentInstance)
+            teamLibrayComponentInstance.x = node.x
+            teamLibrayComponentInstance.y = node.y
+            node.remove()
+          }
+          catch(e) {
+            figma.notify(e)
+          } 
         }
-        catch(e) {
-          figma.notify(e)
-        } 
       } else {
-        replaceNodes(nodes[i].children, teamLibraryComponents)
+        replaceNodes(node.children, teamLibraryComponents)
       }
     } else if (nodes[i].children != null) {
       replaceNodes(nodes[i].children, teamLibraryComponents)
