@@ -19,9 +19,8 @@ async function saveTargetComponent(nodes) {
 }
 
 async function findComponent(teamLibraryMasterComponents, nodes) {
-  const targetNode = []
   for (const node of nodes) {
-    if (node.type === "COMPONENT" || node.type === "COMPONENT_SET") {
+    if (node.type === "COMPONENT") {
       teamLibraryMasterComponents[node.name] = node.key
     } 
     if (node.children != null) {
