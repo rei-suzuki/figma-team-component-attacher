@@ -1,8 +1,8 @@
 const clientStrageKey = 'team-library-components'
 
 async function main() {
-  if (figma.command == "saveComponent") {
-    await figma.clientStorage.setAsync(clientStrageKey, await saveComponent([figma.currentPage])) 
+  if (figma.command == "saveComponents") {
+    await figma.clientStorage.setAsync(clientStrageKey, await saveComponents([figma.currentPage])) 
   }
   else if (figma.command == "replaceNodes") {
     const teamLibraryComponents = await figma.clientStorage.getAsync(clientStrageKey)    
@@ -11,7 +11,7 @@ async function main() {
   figma.closePlugin()
 }
 
-async function saveComponent(nodes) {
+async function saveComponents(nodes) {
   const teamLibraryMasterComponents = {}
   findComponent(teamLibraryMasterComponents, nodes)
 
