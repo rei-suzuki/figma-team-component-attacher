@@ -4,7 +4,7 @@
   "api": "1.0.0",
   "main": "code.js",
    "menu": [
-     {"name": "Save Target Component", "command": "saveTargetComponent"},
+     {"name": "Save Master Component", "command": "saveComponent"},
      {"name": "Replace Nodes", "command": "replaceNodes"}
    ]
 }

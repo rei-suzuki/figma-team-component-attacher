@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const clientStrageKey = 'team-library-components';
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        if (figma.command == "saveTargetComponent") {
-            yield figma.clientStorage.setAsync(clientStrageKey, yield saveTargetComponent([figma.currentPage]));
+        if (figma.command == "saveComponent") {
+            yield figma.clientStorage.setAsync(clientStrageKey, yield saveComponent([figma.currentPage]));
         }
         else if (figma.command == "replaceNodes") {
             const teamLibraryComponents = yield figma.clientStorage.getAsync(clientStrageKey);
@@ -20,7 +20,7 @@ function main() {
         figma.closePlugin();
     });
 }
-function saveTargetComponent(nodes) {
+function saveComponent(nodes) {
     return __awaiter(this, void 0, void 0, function* () {
         const teamLibraryMasterComponents = {};
         findComponent(teamLibraryMasterComponents, nodes);
