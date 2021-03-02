@@ -29,16 +29,12 @@ function saveTargetComponent(nodes) {
 }
 function findComponent(teamLibraryMasterComponents, nodes) {
     return __awaiter(this, void 0, void 0, function* () {
-        const targetNode = [];
         for (const node of nodes) {
-            if (node.type === "COMPONENT" || node.type === "COMPONENT_SET") {
+            if (node.type === "COMPONENT") {
                 teamLibraryMasterComponents[node.name] = node.key;
             }
             if (node.children != null) {
                 findComponent(teamLibraryMasterComponents, node.children);
-            }
-            if (node.children === null) {
-                return false;
             }
         }
     });
@@ -46,32 +42,31 @@ function findComponent(teamLibraryMasterComponents, nodes) {
 // 保存したComponent IDを使ってリプレイス
 function replaceNodes(nodes, teamLibraryComponents) {
     return __awaiter(this, void 0, void 0, function* () {
-        for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].type === "INSTANCE" || nodes[i].type === "FRAME") {
-                const key = teamLibraryComponents[nodes[i].name];
+        for (const node of nodes) {
+            if (node.type === "INSTANCE" || node.type === "FRAME" || node.type === "GROUP") {
+                const key = teamLibraryComponents[node.name];
                 if (key != undefined) {
-                    try {
-                        const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(key);
-                        const teamLibrayComponentInstance = yield getTeamLibraryComponent.createInstance();
-                        const index = nodes[i].parent.children.findIndex((child) => child.id === nodes[i].id);
-                        nodes[i].parent.insertChild(index, teamLibrayComponentInstance);
-                        teamLibrayComponentInstance.x = nodes[i].x;
-                        teamLibrayComponentInstance.y = nodes[i].y;
-                        nodes[i].remove();
+                    if (node.type === "INSTANCE" && node.mainComponent.key === teamLibraryComponents[node.name]) {
+                        continue;
                     }
-                    catch (e) {
-                        figma.notify(e);
+                    else {
+                        try {
+                            const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(key);
+                            const teamLibrayComponentInstance = yield getTeamLibraryComponent.createInstance();
+                            const index = node.parent.children.findIndex((child) => child.id === node.id);
+                            node.parent.insertChild(index, teamLibrayComponentInstance);
+                            teamLibrayComponentInstance.x = node.x;
+                            teamLibrayComponentInstance.y = node.y;
+                            node.remove();
+                        }
+                        catch (e) {
+                            figma.notify(e);
+                        }
                     }
                 }
                 else {
-                    replaceNodes(nodes[i].children, teamLibraryComponents);
+                    replaceNodes(node.children, teamLibraryComponents);
                 }
-            }
-            else if (nodes[i].children != null) {
-                replaceNodes(nodes[i].children, teamLibraryComponents);
-            }
-            else if (nodes[i].children === null) {
-                return false;
             }
         }
     });
