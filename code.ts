@@ -30,32 +30,36 @@ async function findComponent(teamLibraryMasterComponents, nodes) {
 }
 
 // 保存したComponent IDを使ってリプレイス
-async function replaceNodes(nodes, teamLibraryComponents) {
+async function findTargetNodes(nodes, teamLibraryComponents) {
   for (const node of nodes) {
     if (node.type === "INSTANCE" || node.type === "FRAME" || node.type === "GROUP") {
-      const key = teamLibraryComponents[node.name]    
+      const key = teamLibraryComponents[node.name]
       if (key != undefined) { 
         if (node.type === "INSTANCE" && node.mainComponent.key === teamLibraryComponents[node.name]) {
           continue
         } else {
           try {  
-            const getTeamLibraryComponent = await figma.importComponentByKeyAsync(key)
-            const teamLibrayComponentInstance = await getTeamLibraryComponent.createInstance()
-            const index = node.parent.children.findIndex((child) => child.id === node.id)
-            node.parent.insertChild(index, teamLibrayComponentInstance)
-            teamLibrayComponentInstance.x = node.x
-            teamLibrayComponentInstance.y = node.y
-            node.remove()
+            await replaceNodes(node, key)
           }
           catch(e) {
             figma.notify(e)
           } 
         }
       } else {
-        replaceNodes(node.children, teamLibraryComponents)
+        findTargetNodes(node.children, teamLibraryComponents)
       }
     } 
   }
+}
+
+async function replaceNodes(node, key) {
+  const getTeamLibraryComponent = await figma.importComponentByKeyAsync(key)
+  const teamLibrayComponentInstance = await getTeamLibraryComponent.createInstance()
+  const index = node.parent.children.findIndex((child) => child.id === node.id)
+  node.parent.insertChild(index, teamLibrayComponentInstance)
+  teamLibrayComponentInstance.x = node.x
+  teamLibrayComponentInstance.y = node.y
+  node.remove()
 }
 
 main()

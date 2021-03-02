@@ -40,7 +40,7 @@ function findComponent(teamLibraryMasterComponents, nodes) {
     });
 }
 // 保存したComponent IDを使ってリプレイス
-function replaceNodes(nodes, teamLibraryComponents) {
+function findTargetNodes(nodes, teamLibraryComponents) {
     return __awaiter(this, void 0, void 0, function* () {
         for (const node of nodes) {
             if (node.type === "INSTANCE" || node.type === "FRAME" || node.type === "GROUP") {
@@ -51,13 +51,7 @@ function replaceNodes(nodes, teamLibraryComponents) {
                     }
                     else {
                         try {
-                            const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(key);
-                            const teamLibrayComponentInstance = yield getTeamLibraryComponent.createInstance();
-                            const index = node.parent.children.findIndex((child) => child.id === node.id);
-                            node.parent.insertChild(index, teamLibrayComponentInstance);
-                            teamLibrayComponentInstance.x = node.x;
-                            teamLibrayComponentInstance.y = node.y;
-                            node.remove();
+                            yield replaceNodes(node, key);
                         }
                         catch (e) {
                             figma.notify(e);
@@ -65,10 +59,21 @@ function replaceNodes(nodes, teamLibraryComponents) {
                     }
                 }
                 else {
-                    replaceNodes(node.children, teamLibraryComponents);
+                    findTargetNodes(node.children, teamLibraryComponents);
                 }
             }
         }
+    });
+}
+function replaceNodes(node, key) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(key);
+        const teamLibrayComponentInstance = yield getTeamLibraryComponent.createInstance();
+        const index = node.parent.children.findIndex((child) => child.id === node.id);
+        node.parent.insertChild(index, teamLibrayComponentInstance);
+        teamLibrayComponentInstance.x = node.x;
+        teamLibrayComponentInstance.y = node.y;
+        node.remove();
     });
 }
 main();
