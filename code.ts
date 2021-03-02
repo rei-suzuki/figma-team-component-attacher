@@ -6,7 +6,7 @@ async function main() {
   }
   else if (figma.command == "replaceNodes") {
     const teamLibraryComponents = await figma.clientStorage.getAsync(clientStrageKey)    
-    await findTargetNodes(figma.currentPage.selection, teamLibraryComponents)
+    await scanNodes(figma.currentPage.selection, teamLibraryComponents)
   }
   figma.closePlugin()
 }
@@ -30,7 +30,7 @@ async function findComponent(teamLibraryMasterComponents, nodes) {
 }
 
 // 保存したComponent IDを使ってリプレイス
-async function findTargetNodes(nodes, teamLibraryComponents) {
+async function scanNodes(nodes, teamLibraryComponents) {
   for (const node of nodes) {
     if (node.type === "INSTANCE" || node.type === "FRAME" || node.type === "GROUP") {
       const key = teamLibraryComponents[node.name]
@@ -38,9 +38,9 @@ async function findTargetNodes(nodes, teamLibraryComponents) {
         if (node.type === "INSTANCE" && node.mainComponent.key === teamLibraryComponents[node.name]) {
           continue
         }
-        await replaceNodes(node, key)
+        await replaceNode(node, key)
       } else {
-        findTargetNodes(node.children, teamLibraryComponents)
+        scanNodes(node.children, teamLibraryComponents)
       }
     } 
   }
@@ -49,7 +49,7 @@ async function findTargetNodes(nodes, teamLibraryComponents) {
 async function replaceNode(node, key) {
   try {  
     const teamLibraryComponent = await figma.importComponentByKeyAsync(key)
-    const teamLibrayComponentInstance = await getTeamLibraryComponent.createInstance()
+    const teamLibrayComponentInstance = await teamLibraryComponent.createInstance()
     const index = node.parent.children.findIndex((child) => child.id === node.id)
     node.parent.insertChild(index, teamLibrayComponentInstance)
     teamLibrayComponentInstance.x = node.x

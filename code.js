@@ -15,7 +15,7 @@ function main() {
         }
         else if (figma.command == "replaceNodes") {
             const teamLibraryComponents = yield figma.clientStorage.getAsync(clientStrageKey);
-            yield findTargetNodes(figma.currentPage.selection, teamLibraryComponents);
+            yield scanNodes(figma.currentPage.selection, teamLibraryComponents);
         }
         figma.closePlugin();
     });
@@ -40,7 +40,7 @@ function findComponent(teamLibraryMasterComponents, nodes) {
     });
 }
 // 保存したComponent IDを使ってリプレイス
-function findTargetNodes(nodes, teamLibraryComponents) {
+function scanNodes(nodes, teamLibraryComponents) {
     return __awaiter(this, void 0, void 0, function* () {
         for (const node of nodes) {
             if (node.type === "INSTANCE" || node.type === "FRAME" || node.type === "GROUP") {
@@ -49,20 +49,20 @@ function findTargetNodes(nodes, teamLibraryComponents) {
                     if (node.type === "INSTANCE" && node.mainComponent.key === teamLibraryComponents[node.name]) {
                         continue;
                     }
-                    yield replaceNodes(node, key);
+                    yield replaceNode(node, key);
                 }
                 else {
-                    findTargetNodes(node.children, teamLibraryComponents);
+                    scanNodes(node.children, teamLibraryComponents);
                 }
             }
         }
     });
 }
-function replaceNodes(node, key) {
+function replaceNode(node, key) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const getTeamLibraryComponent = yield figma.importComponentByKeyAsync(key);
-            const teamLibrayComponentInstance = yield getTeamLibraryComponent.createInstance();
+            const teamLibraryComponent = yield figma.importComponentByKeyAsync(key);
+            const teamLibrayComponentInstance = yield teamLibraryComponent.createInstance();
             const index = node.parent.children.findIndex((child) => child.id === node.id);
             node.parent.insertChild(index, teamLibrayComponentInstance);
             teamLibrayComponentInstance.x = node.x;
