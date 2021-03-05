@@ -2,10 +2,10 @@ const clientStrageKey = 'team-library-components'
 
 async function main() {
   if (figma.command == "saveComponents") {
-    await figma.clientStorage.setAsync(clientStrageKey, await saveComponents([figma.currentPage])) 
+    await figma.clientStorage.setAsync(clientStrageKey, await saveComponents([figma.currentPage]))
   }
   else if (figma.command == "replaceNodes") {
-    const teamLibraryComponents = await figma.clientStorage.getAsync(clientStrageKey)    
+    const teamLibraryComponents = await figma.clientStorage.getAsync(clientStrageKey)
     await scanNodes(figma.currentPage.selection, teamLibraryComponents)
   }
   figma.closePlugin()
