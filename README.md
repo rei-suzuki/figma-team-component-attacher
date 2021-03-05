@@ -1,40 +1,20 @@
-Below are the steps to get your plugin running. You can also find instructions at:
+<img src='/assets/cover.png'>
 
-  https://www.figma.com/plugin-docs/setup/
+# Team Library Component Attacher
+Provides to replace the frames with Team Library Component(Design System).
 
-This plugin template uses Typescript and NPM, two standard tools in creating JavaScript applications.
+## What It can help...
+- Recover components which lost any links
+  - when you move your frames to another file
+  - when imported a Sketch file
+- Replace your frames with the component which belongs to Team Library
 
-First, download Node.js which comes with NPM. This will allow you to install TypeScript and other
-libraries. You can find the download link here:
+## How to Use
+0. Make sure the target Frame, Group and Instance name and Team Library component name are same.
+  - NOTE: Set the child component name when you use Variants.
+1. Open your Team Library file and run Save master components.
+2. Choose the target Frames, Groups, Instances then run Replace all selections with saved master components.
 
-  https://nodejs.org/en/download/
-
-Next, install TypeScript using the command:
-
-  npm install -g typescript
-
-Finally, in the directory of your plugin, get the latest type definitions for the plugin API by running:
-
-  npm install --save-dev @figma/plugin-typings
-
-If you are familiar with JavaScript, TypeScript will look very familiar. In fact, valid JavaScript code
-is already valid Typescript code.
-
-TypeScript adds type annotations to variables. This allows code editors such as Visual Studio Code
-to provide information about the Figma API while you are writing code, as well as help catch bugs
-you previously didn't notice.
-
-For more information, visit https://www.typescriptlang.org/
-
-Using TypeScript requires a compiler to convert TypeScript (code.ts) into JavaScript (code.js)
-for the browser to run.
-
-We recommend writing TypeScript code using Visual Studio code:
-
-1. Download Visual Studio Code if you haven't already: https://code.visualstudio.com/.
-2. Open this directory in Visual Studio Code.
-3. Compile TypeScript to JavaScript: Run the "Terminal > Run Build Task..." menu item,
-    then select "tsc: watch - tsconfig.json". You will have to do this again every time
-    you reopen Visual Studio Code.
-
-That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+## Known issues & Feature requests
+:construction: Any text and other properties will be lost when replace them with instances.
+Welcome your contributions!

@@ -1,10 +1,10 @@
 {
-  "name": "Team Component Transporter",
+  "name": "Team Library Component Attacher",
   "id": "934637336169002623",
   "api": "1.0.0",
   "main": "code.js",
    "menu": [
-     {"name": "Save Target Component", "command": "saveTargetComponent"},
-     {"name": "Replace Nodes", "command": "replaceNodes"}
+     {"name": "Save master components", "command": "saveComponents"},
+     {"name": "Replace all selections with saved master components", "command": "replaceNodes"}
    ]
 }
