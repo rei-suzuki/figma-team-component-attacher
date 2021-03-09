@@ -11,13 +11,24 @@ const clientStrageKey = 'team-library-components';
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         if (figma.command == "saveComponents") {
-            yield figma.clientStorage.setAsync(clientStrageKey, yield saveComponents([figma.currentPage]));
+            const succeeded = yield saveTeamLibraryComponentsToStorage(figma.currentPage);
+            return figma.closePlugin(succeeded ? "👍Succeeded save components!" : "🤔This document does not have any components. 👀See plugin description for more informations.");
         }
         else if (figma.command == "replaceNodes") {
             const teamLibraryComponents = yield figma.clientStorage.getAsync(clientStrageKey);
             yield scanNodes(figma.currentPage.selection, teamLibraryComponents);
         }
         figma.closePlugin();
+    });
+}
+function saveTeamLibraryComponentsToStorage(currentPage) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const masterComponent = yield currentPage.findOne(n => n.type === "COMPONENT" || n.type === "COMPONENT_SET");
+        if (masterComponent != null) {
+            yield figma.clientStorage.setAsync(clientStrageKey, yield saveComponents([currentPage]));
+            return true;
+        }
+        return false;
     });
 }
 function saveComponents(nodes) {
