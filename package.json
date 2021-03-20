@@ -1,5 +1,5 @@
 {
-  "name": "Team-Component-Transporter",
+  "name": "team-library-component-attacher",
   "version": "1.0.0",
   "description": "Your Figma plugin",
   "main": "code.js",
@@ -9,6 +9,6 @@
   "author": "",
   "license": "",
   "devDependencies": {
-    "@figma/plugin-typings": "^1.19.1"
+    "@figma/plugin-typings": "^1.19.2"
   }
 }
